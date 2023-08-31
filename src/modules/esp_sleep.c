@@ -62,7 +62,6 @@ int esp_sleep_init_device(void){
         LOG_ERR("Failed to set sleep wakeup configuration pin");
         return ret;
     }
-    // char cmd[sizeof("AT+SLEEP=x") + 1];
     snprintk(cmd, sizeof(cmd), "AT+SLEEP=%d", CONFIG_WIFI_ESP_AT_SLEEP_MODE);
     ret = esp_cmd_send(data, NULL, 0, cmd, ESP_CMD_TIMEOUT);
     if (ret != 0){
