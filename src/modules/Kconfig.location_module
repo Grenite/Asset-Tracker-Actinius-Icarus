@@ -1,0 +1,64 @@
+#
+# Copyright (c) 2022 Nordic Semiconductor
+#
+# SPDX-License-Identifier: LicenseRef-Nordic-5-Clause
+#
+
+menuconfig LOCATION_MODULE
+	bool "Location module"
+	select LOCATION
+	select LOCATION_SERVICE_EXTERNAL
+	default y
+
+if LOCATION_MODULE
+
+config LOCATION_MODULE_NEIGHBOR_CELLS_DATA_CONVERT_RSRP_TO_DBM
+	bool "Convert RSRP values to dBm for neighbor cell measurements"
+	default y if AWS_IOT || AZURE_IOT_HUB
+	help
+	  If this option is enabled, RSRP values are converted to dBm before being
+	  sent out by the module with the LOCATION_MODULE_EVT_NEIGHBOR_CELLS_DATA_READY event.
+	  Don't convert RSRP to dBm when building for nRF Cloud, this is handled during encoding
+	  using the nRF Cloud cellular positioning library.
+
+config LOCATION_MODULE_NEIGHBOR_CELLS_DATA_CONVERT_RSRQ_TO_DB
+	bool "Convert RSRQ values to dB for neighbor cell measurements"
+	default y if AWS_IOT || AZURE_IOT_HUB
+	help
+	  If this option is enabled, RSRQ values are converted to dB before being
+	  sent out by the module with the LOCATION_MODULE_EVT_NEIGHBOR_CELLS_DATA_READY event.
+	  Don't convert RSRQ to dB when building for nRF Cloud, this is handled during encoding
+	  using the nRF Cloud cellular positioning library.
+config WIFI_SLEEP
+	depends on WIFI_ESP_AT
+	bool "Enable sleeping of esp module when not in use"
+	default n
+	help
+	  Will send light sleep command to esp-at module to put it into light sleep when the modem is
+	  inactive. Requires configuring a GPIO output pin to wake up the device.
+config WIFI_ESP_AT_WAKEUP_PIN
+	depends on WIFI_SLEEP
+	int "ESP-AT Wakeup pin"
+	help
+	  Defines the pin on the esp-at board to use as the external wakeup source sent
+	  via AT+SLEEPWKCFG
+config WIFI_ESP_AT_SLEEP_MODE
+	depends on WIFI_SLEEP
+	int "ESP-AT Sleep Mode"
+	default 0
+	help
+	  Defines the sleep mode argument to AT+SLEEP. 0 is disabled, 1 is Modem Sleep, 2
+	  is Light-Sleep
+# When a dedicated partition is used for P-GPS, the partition size and the number of predictions
+# needs to be decreased from the default values to fit in flash
+config NRF_CLOUD_PGPS_PARTITION_SIZE
+	default 0x10000 if NRF_CLOUD_PGPS_STORAGE_PARTITION
+
+config NRF_CLOUD_PGPS_NUM_PREDICTIONS
+	default 32 if NRF_CLOUD_PGPS_STORAGE_PARTITION
+
+module = LOCATION_MODULE
+module-str = Location module
+source "subsys/logging/Kconfig.template.log_config"
+
+endif # LOCATION_MODULE

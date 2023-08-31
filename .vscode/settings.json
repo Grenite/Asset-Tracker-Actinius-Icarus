@@ -1,0 +1,14 @@
+{
+    "nrf-connect.applications": [
+        "${workspaceFolder}"
+    ],
+    "nrf-connect.topdir": "${nrf-connect.sdk:2.3.0}",
+    "nrf-connect.toolchain.path": "${nrf-connect.toolchain:2.3.0}",
+    "files.associations": {
+        "battery.h": "c",
+        "pm.h": "c",
+        "esp.h": "c"
+    },
+    "iis.configDir": "",
+    "esbonio.sphinx.confDir": ""
+}

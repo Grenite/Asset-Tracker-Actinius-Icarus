@@ -1,0 +1,79 @@
+/ {
+    pwmleds {
+		compatible = "pwm-leds";
+
+		red_pwm_led: led_pwm_0 {
+			pwms = <&pwm0 0 PWM_MSEC(10) PWM_POLARITY_INVERTED>;
+			label = "Red PWM LED";
+		};
+
+		green_pwm_led: led_pwm_1 {
+			pwms = <&pwm0 1 PWM_MSEC(10) PWM_POLARITY_INVERTED>;
+			label = "Green PWM LED";
+		};
+
+		blue_pwm_led: led_pwm_2 {
+			pwms = <&pwm0 2 PWM_MSEC(10) PWM_POLARITY_INVERTED>;
+			label = "Blue PWM LED";
+		};
+	};
+	gpio {
+		compatible = "gpio-keys";
+		sleepout0: sleepout_0{
+			gpios = <&gpio0 22 GPIO_ACTIVE_HIGH>;
+			label = "Esp AT sleep pin output";
+		};
+	};
+
+	aliases {
+		esp-at-sleep = &sleepout0;
+		accelerometer = &lis2dh12_accel;
+	};
+};
+//uart1 for esp32
+&uart1 {
+	status = "okay";
+	current-speed = <115200>;
+
+	pinctrl-0 = <&uart1_default_alt>;
+	pinctrl-1 = <&uart1_sleep_alt>;
+	pinctrl-names = "default", "sleep";
+	esp32: esp32 {
+		compatible = "espressif,esp-at";
+		status = "okay";
+	};
+};
+
+&pinctrl {
+	uart1_default_alt: uart1_default_alt {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 24)>;
+		};
+		group2{
+			psels = <NRF_PSEL(UART_RX, 0, 23)>;
+			bias-pull-up;
+		};
+	};
+
+	uart1_sleep_alt: uart1_sleep_alt {
+		group1 {
+			psels = <NRF_PSEL(UART_TX, 0, 24)>;
+			low-power-enable;
+		};
+		group2{
+			psels = <NRF_PSEL(UART_RX, 0, 23)>;
+			low-power-enable;
+			bias-pull-up;
+		};
+	};
+
+};
+
+/ {
+	chosen {
+		ncs,location-wifi = &esp32;
+	};
+};
+&sim_select {
+    sim = "external";
+};
